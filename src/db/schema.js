@@ -3,10 +3,10 @@ import { relations } from 'drizzle-orm';
 
 // 1. Define the Match Status Enum
 // This ensures data integrity at the database level
-export const matchStatusEnum = pgEnum('match_status', [ 'scheduled', 'live', 'finished' ]);
+export const matchStatusEnum = pgEnum('match_status', [ 'scheduled', 'live', 'finished' ] );
 
 // 2. The Matches Table
-export const matches = pgTable('matches', {
+export const matchSchema = pgTable('matches', {
   id: serial('id').primaryKey(),
   sport: text('sport').notNull(),
   homeTeam: text('home_team').notNull(),
@@ -23,7 +23,7 @@ export const matches = pgTable('matches', {
 export const commentary = pgTable('commentary', {
   id: serial('id').primaryKey(),
   matchId: integer('match_id')
-    .references(() => matches.id, { onDelete: 'cascade' })
+    .references(() => matchSchema.id, { onDelete: 'cascade' })
     .notNull(),
   minute: integer('minute'),
   sequence: integer('sequence').notNull(), // To ensure correct order of events
@@ -38,13 +38,13 @@ export const commentary = pgTable('commentary', {
 });
 
 // 4. Define Relations (Optional but highly recommended for Drizzle Queries)
-export const matchesRelations = relations(matches, ({ many }) => ({
+export const matchesRelations = relations(matchSchema, ({ many }) => ({
   commentaries: many(commentary),
 }));
 
 export const commentaryRelations = relations(commentary, ({ one }) => ({
-  match: one(matches, {
+  match: one(matchSchema, {
     fields: [commentary.matchId],
-    references: [matches.id],
+    references: [matchSchema.id],
   }),
 }));
