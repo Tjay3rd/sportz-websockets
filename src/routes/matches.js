@@ -33,18 +33,20 @@ matchRouter.get("/", async (req,res) => {
 
 matchRouter.post("/", async (req, res) => {
   const parsed = createMatchValidator.safeParse(req.body);
-  const{data: {startTime, endTime, homeScore, awayScore}} = parsed;
 
   if(!parsed.success) return res.status(400).json({error: "Invalid Payload.", details: parsed.error.issues})
 
+  const{startTime, endTime, homeScore, awayScore} = parsed.data;
+
   try {
+    const matchStatus = getMatchStatus(startTime, endTime) ?? 'scheduled';
     const[event] = await db.insert(matchSchema).values({
       ...parsed.data,
       startTime: new Date(startTime),
       endTime: parsed.data.endTime ? new Date(endTime) : null,
       homeScore: homeScore ?? 0,
       awayScore: awayScore ?? 0,
-      status: getMatchStatus(startTime, endTime),
+      status: matchStatus,
     }).returning()
 
     res.status(201).json({data: event});
