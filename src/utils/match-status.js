@@ -16,7 +16,6 @@ export function getMatchStatus(startTime, endTime, now = new Date()) {
     if (now < start) {
       return MATCH_STATUS.SCHEDULED;
     }
-    if (now > start + 5 ) return MATCH_STATUS.FINISHED;
     return MATCH_STATUS.LIVE;
   }
 
