@@ -5,7 +5,7 @@ export function getMatchStatus(startTime, endTime, now = new Date()) {
   const MAX_MATCH_DURATION_MS = 4 * 60 * 60 * 1000; //4hrs
   const start = new Date(startTime);
 
-  if (isNaN(start.getTime())) return null;
+  if (Number.isNaN(start.getTime())) return null;
 
   if (!endTime)  {
 
@@ -22,7 +22,7 @@ export function getMatchStatus(startTime, endTime, now = new Date()) {
 
   const end = new Date(endTime);
 
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+  if ( Number.isNaN(end.getTime()) ) {
     return null;
   }
 

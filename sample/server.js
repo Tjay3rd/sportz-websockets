@@ -9,10 +9,9 @@ const wss = new WebSocketServer({port: 8080})
   //4.CLOSED
 
 //Connection Event
-  wss.on("connection", (socket, request) => {
+wss.on("connection", (socket, request) => {
 
   const ip = request.socket.remoteAddress
-
 
   socket.on("message", (rawData) => {
    const message = rawData.toString()

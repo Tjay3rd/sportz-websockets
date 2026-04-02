@@ -14,7 +14,7 @@ export const matchIdParamValidator = z.object({
   id: z.coerce.number().int().positive()
 });
 
-const isoDateValidator = z.iso.datetime({message: "Invalid ISO date string"})
+const isoDateValidator = z.iso.datetime();
 
 export const createMatchValidator = z.object({
     sport: z.string().min(1),
