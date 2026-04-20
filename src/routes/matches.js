@@ -46,7 +46,7 @@ matchRouter.post("/", async (req, res) => {
       endTime: parsed.data.endTime ? new Date(endTime) : null,
       homeScore: homeScore ?? 0,
       awayScore: awayScore ?? 0,
-      status: getMatchStatus(startTime, endTime) ?? 'SCHEDULED',
+      status: getMatchStatus(startTime, endTime) ?? 'scheduled',
     }).returning()
 
     if(res.app.locals.broadcastMatchCreated) {
@@ -55,6 +55,6 @@ matchRouter.post("/", async (req, res) => {
 
     res.status(201).json({data: event});
   } catch (e) {
-    res.status(500).json({error: "Failed to create match.", details: e.message})
+    res.status(500).json({error: "Failed to create match.", details: e})
   }
 })
