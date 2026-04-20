@@ -13,7 +13,7 @@ const MAX_LIMIT = 100
 matchRouter.get("/", async (req,res) => {
   const parsed = listMatchesQueryValidator.safeParse(req.query);
   if(!parsed.success){
-    return res.status(400).json({error: "Invalid Query.", details: JSON.stringify(parsed.error)});
+    return res.status(400).json({error: "Invalid Query.", details: parsed.error.issues});
   }
   const limit = Math.min(parsed.data.limit ?? 50, MAX_LIMIT)
 
@@ -39,18 +39,22 @@ matchRouter.post("/", async (req, res) => {
   const{startTime, endTime, homeScore, awayScore} = parsed.data;
 
   try {
-    const matchStatus = getMatchStatus(startTime, endTime) ?? 'scheduled';
+
     const[event] = await db.insert(matchSchema).values({
       ...parsed.data,
       startTime: new Date(startTime),
       endTime: parsed.data.endTime ? new Date(endTime) : null,
       homeScore: homeScore ?? 0,
       awayScore: awayScore ?? 0,
-      status: matchStatus,
+      status: getMatchStatus(startTime, endTime) ?? 'scheduled',
     }).returning()
+
+    if(res.app.locals.broadcastMatchCreated) {
+      res.app.locals.broadcastMatchCreated(event);
+    }
 
     res.status(201).json({data: event});
   } catch (e) {
-    res.status(500).json({error: "Failed to create match.", details: JSON.stringify(e.message)})
+    res.status(500).json({error: "Failed to create match.", details: e})
   }
 })
