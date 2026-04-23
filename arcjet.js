@@ -1,9 +1,15 @@
 import arcjet, {detectBot, shield, slidingWindow} from "@arcjet/node";
 
-const arcjetKey = process.env.ARCKET_KEY;
-const arcjetMode= process.env.ARCJET_MODE === "DRY RUN" ? "DRY RUN" : "LIVE";
+const arcjetKey = process.env.ARCJET_KEY;
+const arcjetMode = process.env.ARCJET_MODE === "DRY_RUN" ? "DRY_RUN" : "LIVE";
 
-if(!arcjet) throw new Error("ARCJET_KEY environment variable is missing.");
+if (!arcjetKey) {
+  // Soft-disable in dev; fail fast in production to avoid silently losing protection.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("ARCJET_KEY environment variable is missing.");
+  }
+  console.warn("ARCJET_KEY is not set — Arcjet protection is disabled.");
+}
 
 export const httpArcjet = arcjetKey ? arcjet({
  key: arcjetKey,
